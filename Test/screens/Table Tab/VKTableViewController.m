@@ -11,9 +11,10 @@
 #import "VKRequest.h"
 #import "VKResponse.h"
 #import "VKRequestManager.h"
+#import "VKBigImageController.h"
 
 @interface VKTableViewController ()
-@property (strong, nonatomic) NSMutableArray* tableData;
+@property (strong, nonatomic) NSMutableArray* vkTableData;
 @end
 
 @implementation VKTableViewController
@@ -22,7 +23,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableData = [[NSMutableArray alloc] init];
+    self.vkTableData = [[NSMutableArray alloc] init];
     
     VKRequest* requestPhotoList = [[VKRequest alloc] init];
     NSDictionary *params = @{
@@ -41,7 +42,7 @@
         dict = [dict objectForKey:@"items"];
         for (NSDictionary* photoElem in dict) {
             NSArray* sizes = [photoElem objectForKey:@"sizes"];
-            [self.tableData addObject:sizes];
+            [self.vkTableData addObject:sizes];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -61,7 +62,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[self tableData] count];
+    return [[self vkTableData] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -73,16 +74,8 @@
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
-        
-        NSDictionary* currentElem = [self.tableData objectAtIndex:indexPath.row];
-        
-        NSDictionary* neededSize;
-        for (NSDictionary * sizeParameters in currentElem) {
-            if ([[sizeParameters objectForKey:@"type"]  isEqual: @"x"]) {
-                neededSize = [NSDictionary dictionaryWithDictionary:sizeParameters];
-                break;
-            }
-        }
+        NSDictionary* neededSize = [self getSizeWith: @"x"
+                                                from:[self.vkTableData objectAtIndex:indexPath.row]];
         
         NSString* urlStr = [neededSize objectForKey:@"url"];
         NSURL* url = [NSURL URLWithString:urlStr];
@@ -97,12 +90,43 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return UITableViewAutomaticDimension;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary* neededSize = [self getSizeWith: @"x"
+                                            from:[self.vkTableData objectAtIndex:indexPath.row]];
+    if (!neededSize) {
+        return 0;
+    }
+    
+    NSString* widthStr = [neededSize objectForKey:@"width"];
+    NSString* heightStr = [neededSize objectForKey:@"height"];
+    
+    NSInteger width = [widthStr integerValue];
+    NSInteger height = [heightStr integerValue];
+    
+    double ratio = (double)height / (double)width;
+    double outputHeight = ratio * UIScreen.mainScreen.bounds.size.width;
+    
+    return ( round(outputHeight) );
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return UITableViewAutomaticDimension;
+#pragma mark - select
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self performSegueWithIdentifier:@"FromTableToBig" sender:indexPath];
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"FromTableToBig"]) {
+        VKBigImageController *page = segue.destinationViewController;
+        NSIndexPath * indexPath = (NSIndexPath*)sender;
+        
+        NSDictionary* neededSize = [self getSizeWith: @"x"
+                                                from:[self.vkTableData objectAtIndex:indexPath.row]];
+        if (!neededSize) {
+            return;
+        }
+        
+        page.imageData = neededSize;
+    }
 }
 
 /*
@@ -133,5 +157,17 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+#pragma mark - private methods
+- (NSDictionary*) getSizeWith: (NSString*)mark from:(NSDictionary*)sizeCollection {
+    NSDictionary* neededSize;
+    for (NSDictionary * sizeParameters in sizeCollection) {
+        if ([[sizeParameters objectForKey:@"type"]  isEqual: mark]) {
+            neededSize = [NSDictionary dictionaryWithDictionary:sizeParameters];
+            break;
+        }
+    }
+    return neededSize;
+}
 
 @end

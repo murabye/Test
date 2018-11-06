@@ -11,6 +11,7 @@
 #import "VKRequest.h"
 #import "VKRequestManager.h"
 #import "VKResponse.h"
+#import "VKBigImageController.h"
 
 @interface VKCollectionViewController ()
 @property (strong, nonatomic) NSMutableArray* collectionData;
@@ -55,15 +56,23 @@ static NSString * const reuseIdentifier = @"SimpleCollectionItem";
     [super didReceiveMemoryWarning];
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
+#pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    if ([segue.identifier isEqualToString:@"FromCollectionToBig"]) {
+        VKBigImageController *page = segue.destinationViewController;
+        NSIndexPath * indexPath = (NSIndexPath*)sender;
+        
+        NSDictionary* neededSize = [self getSizeWith: @"x"
+                                                from:[self.collectionData objectAtIndex:indexPath.row]];
+        if (!neededSize) {
+            return;
+        }
+        
+        page.imageData = neededSize;
+    }
 }
-*/
+
 
 #pragma mark - <UICollectionViewDataSource>
 
@@ -88,14 +97,7 @@ static NSString * const reuseIdentifier = @"SimpleCollectionItem";
     dispatch_async(queue, ^{
         
         NSDictionary* currentElem = [self.collectionData objectAtIndex:indexPath.row];
-        
-        NSDictionary* neededSize;
-        for (NSDictionary * sizeParameters in currentElem) {
-            if ([[sizeParameters objectForKey:@"type"]  isEqual: @"m"]) {
-                neededSize = [NSDictionary dictionaryWithDictionary:sizeParameters];
-                break;
-            }
-        }
+        NSDictionary* neededSize = [self getSizeWith:@"m" from:currentElem];
         
         NSString* urlStr = [neededSize objectForKey:@"url"];
         NSURL* url = [NSURL URLWithString:urlStr];
@@ -110,7 +112,30 @@ static NSString * const reuseIdentifier = @"SimpleCollectionItem";
     return cell;
 }
 
-#pragma mark <UICollectionViewDelegate>
+#pragma mark - <UICollectionViewDelegateFlowLayout>
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary* neededSize = [self getSizeWith: @"m"
+                                            from:[self.collectionData objectAtIndex:indexPath.row]];
+    
+    if (!neededSize) {
+        return CGSizeMake(0, 0);
+    }
+    
+    NSString* widthStr = [neededSize objectForKey:@"width"];
+    NSString* heightStr = [neededSize objectForKey:@"height"];
+    
+    double width = [widthStr doubleValue];
+    double height = [heightStr doubleValue];
+    
+    return CGSizeMake(width, height);
+}
+
+
+#pragma mark - <UICollectionViewDelegate>
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self performSegueWithIdentifier:@"FromCollectionToBig" sender:indexPath];
+}
 
 /*
 // Uncomment this method to specify if the specified item should be highlighted during tracking
@@ -140,5 +165,19 @@ static NSString * const reuseIdentifier = @"SimpleCollectionItem";
 	
 }
 */
+
+
+
+#pragma mark - private methods
+- (NSDictionary*) getSizeWith: (NSString*)mark from:(NSDictionary*)sizeCollection {
+    NSDictionary* neededSize;
+    for (NSDictionary * sizeParameters in sizeCollection) {
+        if ([[sizeParameters objectForKey:@"type"]  isEqual: mark]) {
+            neededSize = [NSDictionary dictionaryWithDictionary:sizeParameters];
+            break;
+        }
+    }
+    return neededSize;
+}
 
 @end

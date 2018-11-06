@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface VKCollectionViewController : UICollectionViewController
+@interface VKCollectionViewController : UICollectionViewController<UICollectionViewDelegateFlowLayout>
 
 @end

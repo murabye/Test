@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D617B622156B67900E488A3 /* VKBigImageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D617B612156B67900E488A3 /* VKBigImageController.m */; };
 		B615B7D22135291600C735E0 /* VKCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B615B7D12135291600C735E0 /* VKCollectionViewCell.m */; };
 		B615B7D62136BFA300C735E0 /* VKRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B615B7D52136BFA300C735E0 /* VKRequest.m */; };
 		B69B8A1F21393D950056564F /* VKRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B69B8A1E21393D950056564F /* VKRequestManager.m */; };
@@ -23,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5D617B602156B67900E488A3 /* VKBigImageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VKBigImageController.h; sourceTree = "<group>"; };
+		5D617B612156B67900E488A3 /* VKBigImageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VKBigImageController.m; sourceTree = "<group>"; };
 		B615B7D02135291600C735E0 /* VKCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VKCollectionViewCell.h; sourceTree = "<group>"; };
 		B615B7D12135291600C735E0 /* VKCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VKCollectionViewCell.m; sourceTree = "<group>"; };
 		B615B7D42136BFA300C735E0 /* VKRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VKRequest.h; sourceTree = "<group>"; };
@@ -60,10 +63,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D617B592156862D00E488A3 /* Full Image */ = {
+			isa = PBXGroup;
+			children = (
+				5D617B602156B67900E488A3 /* VKBigImageController.h */,
+				5D617B612156B67900E488A3 /* VKBigImageController.m */,
+			);
+			path = "Full Image";
+			sourceTree = "<group>";
+		};
 		B603DF0B215269460098F9A2 /* screens */ = {
 			isa = PBXGroup;
 			children = (
-				B603DF0D21526CBF0098F9A2 /* Full Image */,
+				5D617B592156862D00E488A3 /* Full Image */,
 				B6BA895C2133F2BE004FB0F5 /* Table Tab */,
 				B6BA895D2133F2D3004FB0F5 /* Collection Tab */,
 			);
@@ -76,13 +88,6 @@
 				B615B7D32136BF4F00C735E0 /* Requests */,
 			);
 			path = core;
-			sourceTree = "<group>";
-		};
-		B603DF0D21526CBF0098F9A2 /* Full Image */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Full Image";
 			sourceTree = "<group>";
 		};
 		B615B7D32136BF4F00C735E0 /* Requests */ = {
@@ -227,6 +232,7 @@
 				B615B7D62136BFA300C735E0 /* VKRequest.m in Sources */,
 				B6BA894B2133C653004FB0F5 /* ViewController.m in Sources */,
 				B6BA896321340636004FB0F5 /* VKTableViewController.m in Sources */,
+				5D617B622156B67900E488A3 /* VKBigImageController.m in Sources */,
 				B69B8A2221393DA60056564F /* VKResponse.m in Sources */,
 				B6BA896B2134425D004FB0F5 /* VKOneImageViewCell.m in Sources */,
 				B6BA89562133C655004FB0F5 /* main.m in Sources */,
